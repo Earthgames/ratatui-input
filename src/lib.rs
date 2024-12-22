@@ -7,7 +7,35 @@ mod termion;
 // #[cfg(feature = "termwiz")]
 mod termwiz;
 
-/// Input enum to represent all inputs a you may get.
+pub struct Input {
+    pub key: Key,
+    pub modifier: Modifier,
+}
+
+impl Input {
+    fn new(key: Key, modifier: Modifier) -> Input {
+        Input { key, modifier }
+    }
+    fn with_key(&mut self, key: Key) -> &mut Self {
+        self.key = key;
+        self
+    }
+    fn with_modifier(&mut self, modifier: Modifier) -> &mut Self {
+        self.modifier = modifier;
+        self
+    }
+}
+
+impl Default for Input {
+    fn default() -> Self {
+        Self {
+            key: Key::None,
+            modifier: Modifier::None,
+        }
+    }
+}
+
+/// Input enum to represent all keys you may get
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Key {
     Up,
@@ -15,7 +43,7 @@ pub enum Key {
     Left,
     Right,
     /// Character key
-    /// like a key, h key
+    /// like `a` key, `h` key
     Char(char),
     Esc,
     Backspace,
@@ -63,9 +91,12 @@ pub enum Modifier {
     Super(Side),
     Meta(Side),
     Hyper(Side),
+    /// No modifier
+    None,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+/// If there is no side reported Left will used as default
 pub enum Side {
     Left,
     Right,

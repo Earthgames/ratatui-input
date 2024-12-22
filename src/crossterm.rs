@@ -1,19 +1,23 @@
-use crossterm::event::{Event, KeyCode};
+use crossterm::event::{Event, KeyCode, KeyEventKind, KeyModifiers, MediaKeyCode, ModifierKeyCode};
+
+use crate::Input;
 
 use super::{Key, Modifier, Side};
 
-impl From<&Event> for Key {
+impl From<&Event> for Input {
     fn from(value: &Event) -> Self {
         if let Event::Key(key) = value {
             if matches!(
                 key.kind,
-                crossterm::event::KeyEventKind::Press | crossterm::event::KeyEventKind::Repeat
+                KeyEventKind::Press | crossterm::event::KeyEventKind::Repeat
             ) {
-                return key.code.into();
+                let result_key: Key = key.code.into();
+                let modifier = key.modifiers.into();
+                return Input::new(result_key, modifier);
             }
         }
 
-        Key::None
+        Input::default()
     }
 }
 
@@ -44,57 +48,54 @@ impl From<KeyCode> for Key {
             KeyCode::Pause => Key::Pause,
             KeyCode::Menu => Key::Menu,
             KeyCode::Media(media) => match media {
-                crossterm::event::MediaKeyCode::Play => Key::MediaPlay,
-                crossterm::event::MediaKeyCode::Pause => Key::MediaPause,
-                crossterm::event::MediaKeyCode::PlayPause => Key::MediaPlayPause,
-                crossterm::event::MediaKeyCode::Stop => Key::MediaStop,
-                crossterm::event::MediaKeyCode::TrackNext => Key::MediaNext,
-                crossterm::event::MediaKeyCode::TrackPrevious => Key::MediaPrevious,
-                crossterm::event::MediaKeyCode::LowerVolume => Key::LowerVolume,
-                crossterm::event::MediaKeyCode::RaiseVolume => Key::RaisVolume,
-                crossterm::event::MediaKeyCode::MuteVolume => Key::MuteVolume,
+                MediaKeyCode::Play => Key::MediaPlay,
+                MediaKeyCode::Pause => Key::MediaPause,
+                MediaKeyCode::PlayPause => Key::MediaPlayPause,
+                MediaKeyCode::Stop => Key::MediaStop,
+                MediaKeyCode::TrackNext => Key::MediaNext,
+                MediaKeyCode::TrackPrevious => Key::MediaPrevious,
+                MediaKeyCode::LowerVolume => Key::LowerVolume,
+                MediaKeyCode::RaiseVolume => Key::RaisVolume,
+                MediaKeyCode::MuteVolume => Key::MuteVolume,
                 _ => Key::None,
             },
-            KeyCode::Modifier(modifier) => match modifier {
-                crossterm::event::ModifierKeyCode::LeftShift => {
-                    Key::Modifier(Modifier::Shift(Side::Left))
-                }
-                crossterm::event::ModifierKeyCode::LeftControl => {
-                    Key::Modifier(Modifier::Control(Side::Left))
-                }
-                crossterm::event::ModifierKeyCode::LeftAlt => {
-                    Key::Modifier(Modifier::Alt(Side::Left))
-                }
-                crossterm::event::ModifierKeyCode::LeftSuper => {
-                    Key::Modifier(Modifier::Super(Side::Left))
-                }
-                crossterm::event::ModifierKeyCode::LeftHyper => {
-                    Key::Modifier(Modifier::Hyper(Side::Left))
-                }
-                crossterm::event::ModifierKeyCode::LeftMeta => {
-                    Key::Modifier(Modifier::Meta(Side::Left))
-                }
-                crossterm::event::ModifierKeyCode::RightShift => {
-                    Key::Modifier(Modifier::Shift(Side::Right))
-                }
-                crossterm::event::ModifierKeyCode::RightControl => {
-                    Key::Modifier(Modifier::Control(Side::Right))
-                }
-                crossterm::event::ModifierKeyCode::RightAlt => {
-                    Key::Modifier(Modifier::Alt(Side::Right))
-                }
-                crossterm::event::ModifierKeyCode::RightSuper => {
-                    Key::Modifier(Modifier::Super(Side::Right))
-                }
-                crossterm::event::ModifierKeyCode::RightHyper => {
-                    Key::Modifier(Modifier::Hyper(Side::Right))
-                }
-                crossterm::event::ModifierKeyCode::RightMeta => {
-                    Key::Modifier(Modifier::Meta(Side::Right))
-                }
-                _ => Key::None,
-            },
+            KeyCode::Modifier(modifier) => Key::Modifier(modifier.into()),
             _ => Key::None,
+        }
+    }
+}
+
+impl From<ModifierKeyCode> for Modifier {
+    fn from(value: ModifierKeyCode) -> Self {
+        match value {
+            ModifierKeyCode::LeftShift => Modifier::Shift(Side::Left),
+            ModifierKeyCode::LeftControl => Modifier::Control(Side::Left),
+            ModifierKeyCode::LeftAlt => Modifier::Alt(Side::Left),
+            ModifierKeyCode::LeftSuper => Modifier::Super(Side::Left),
+            ModifierKeyCode::LeftHyper => Modifier::Hyper(Side::Left),
+            ModifierKeyCode::LeftMeta => Modifier::Meta(Side::Left),
+            ModifierKeyCode::RightShift => Modifier::Shift(Side::Right),
+            ModifierKeyCode::RightControl => Modifier::Control(Side::Right),
+            ModifierKeyCode::RightAlt => Modifier::Alt(Side::Right),
+            ModifierKeyCode::RightSuper => Modifier::Super(Side::Right),
+            ModifierKeyCode::RightHyper => Modifier::Hyper(Side::Right),
+            ModifierKeyCode::RightMeta => Modifier::Meta(Side::Right),
+            _ => Modifier::None,
+        }
+    }
+}
+
+impl From<KeyModifiers> for Modifier {
+    fn from(value: KeyModifiers) -> Self {
+        match value {
+            KeyModifiers::SHIFT => Modifier::Shift(Side::Left),
+            KeyModifiers::CONTROL => Modifier::Control(Side::Left),
+            KeyModifiers::ALT => Modifier::Alt(Side::Left),
+            KeyModifiers::META => Modifier::Meta(Side::Left),
+            KeyModifiers::SUPER => Modifier::Super(Side::Left),
+            KeyModifiers::HYPER => Modifier::Hyper(Side::Left),
+            KeyModifiers::NONE => Modifier::None,
+            _ => Modifier::None,
         }
     }
 }
