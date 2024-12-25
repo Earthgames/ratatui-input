@@ -2,6 +2,10 @@
 name = "ratatui-input"
 version = "0.1.0"
 edition = "2021"
+authors = ["Earthgame_s"]
+description = "Unify input from diffrent ratatui backends"
+repository = "https://github.com/Earthgames/ratatui-input"
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
