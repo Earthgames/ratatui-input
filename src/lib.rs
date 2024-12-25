@@ -16,14 +16,6 @@ impl Input {
     fn new(key: Key, modifier: Modifier) -> Input {
         Input { key, modifier }
     }
-    fn with_key(&mut self, key: Key) -> &mut Self {
-        self.key = key;
-        self
-    }
-    fn with_modifier(&mut self, modifier: Modifier) -> &mut Self {
-        self.modifier = modifier;
-        self
-    }
 }
 
 impl Default for Input {
@@ -57,7 +49,7 @@ pub enum Key {
     PageDown,
     Delete,
     Insert,
-    // Function keys
+    /// Function keys
     Func(u8),
     ScrollLock,
     NumLock,
@@ -96,7 +88,7 @@ pub enum Modifier {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-/// If there is no side reported Left will used as default
+/// If there is no side reported; Left will used as default
 pub enum Side {
     Left,
     Right,
