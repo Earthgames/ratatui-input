@@ -7,14 +7,32 @@ mod termion;
 // #[cfg(feature = "termwiz")]
 mod termwiz;
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct Input {
     pub key: Key,
     pub modifier: Modifier,
 }
 
 impl Input {
-    fn new(key: Key, modifier: Modifier) -> Input {
+    pub fn new(key: Key, modifier: Modifier) -> Input {
         Input { key, modifier }
+    }
+    pub fn new_key(key: Key) -> Input {
+        Input {
+            key,
+            modifier: Modifier::None,
+        }
+    }
+    pub fn keys(keys: &[Key]) -> Vec<Input> {
+        keys.iter().map(|key| Self::new_key(*key)).collect()
+    }
+    pub fn with_key(&mut self, key: Key) -> &mut Self {
+        self.key = key;
+        self
+    }
+    pub fn with_modifier(&mut self, modifier: Modifier) -> &mut Self {
+        self.modifier = modifier;
+        self
     }
 }
 
