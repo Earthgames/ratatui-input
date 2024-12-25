@@ -1,4 +1,4 @@
-# ratatui-input
+# ratatui-eventInput
 
 Unifies input handling from [crossterm](https://docs.rs/crossterm/latest/crossterm/), [termion](https://docs.rs/termion/latest/termion/) and [termwiz](https://docs.rs/termwiz/latest/termwiz/)
 It is meant to be used by ratatui libraries to make input handling easier, or allow people using a library to specify what input to listen to
@@ -7,12 +7,12 @@ It is meant to be used by ratatui libraries to make input handling easier, or al
 
 The different are all disabled by default, so need the features to use them:
 ```toml
-ratatui-input = { version = "1.0", features = ["crossterm", "termion", "termwiz"] }
+ratatui-eventInput = { version = "1.0", features = ["crossterm", "termion", "termwiz"] }
 ```
 
 After that just use a function like this to handle the input:
 ```rust
-use ratatui_input::{Input, Key};
+use ratatui_eventInput::{Input, Key};
 
 pub fn handle<I: Into<Input>>(&mut self, input: I) {
     let input: Input = input.into()
