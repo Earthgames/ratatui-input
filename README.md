@@ -7,7 +7,13 @@ It is meant to be used by ratatui libraries to make input handling easier, or al
 
 The different are all disabled by default, so need the features to use them:
 ```toml
-ratatui-eventInput = { version = "1.0", features = ["crossterm", "termion", "termwiz"] }
+ratatui-eventInput = { 
+    version = "1.0", 
+    features = [
+        "crossterm", 
+        "termion", 
+        "termwiz"
+    ] }
 ```
 
 After that just use a function like this to handle the input:
