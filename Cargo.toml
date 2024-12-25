@@ -15,7 +15,6 @@ termion = { version = "4.0.2", optional = true }
 termwiz = { version = "0.22", optional = true }
 
 [features]
-default = ["crossterm", "termion", "termwiz"]
 crossterm = ["dep:crossterm"]
 termion = ["dep:termion"]
 termwiz = ["dep:termwiz"]
