@@ -1,10 +1,10 @@
 #[cfg(feature = "crossterm")]
 mod crossterm;
 
-// #[cfg(feature = "termion")]
+#[cfg(feature = "termion")]
 mod termion;
 
-// #[cfg(feature = "termwiz")]
+#[cfg(feature = "termwiz")]
 mod termwiz;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
