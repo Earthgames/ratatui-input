@@ -1,3 +1,5 @@
+use std::hash::Hash;
+
 #[cfg(feature = "crossterm")]
 mod crossterm;
 
@@ -105,9 +107,30 @@ pub enum Modifier {
     None,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, Eq)]
 /// If there is no side reported; Left will used as default
 pub enum Side {
     Left,
     Right,
+    /// Is `PartialEq` to any side.
+    /// Useful for when you don't want to pick a side
+    Any,
+}
+
+impl PartialEq for Side {
+    fn eq(&self, other: &Self) -> bool {
+        match self {
+            Side::Any => true,
+            _ => match other {
+                Side::Any => true,
+                _ => core::mem::discriminant(self) == core::mem::discriminant(other),
+            },
+        }
+    }
+}
+
+impl Hash for Side {
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        core::mem::discriminant(self).hash(state);
+    }
 }
