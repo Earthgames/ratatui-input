@@ -4,11 +4,11 @@ Unifies input handling from [crossterm](https://docs.rs/crossterm/latest/crosste
 
 It is meant to be used by ratatui libraries to make input handling easier, or allow people using a library to specify what input to listen to.
 
-## basic usage
+## Basic usage
 
-The different are all disabled by default, so need the features to use them:
+The default backend is `crossterm`, if you want to use a different one you need to enable the feature for it:
 ```toml
-ratatui-eventInput = { 
+ratatui-eventInput = {
     version = "0.1", 
     features = [
         "crossterm", 
