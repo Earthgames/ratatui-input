@@ -14,7 +14,11 @@ crossterm = { version = "0.28", optional = true }
 termion = { version = "4.0.2", optional = true }
 termwiz = { version = "0.22", optional = true }
 
+[dev-dependencies]
+ratatui = "0.28.1"
+
 [features]
+default = ["crossterm"]
 crossterm = ["dep:crossterm"]
 termion = ["dep:termion"]
 termwiz = ["dep:termwiz"]
