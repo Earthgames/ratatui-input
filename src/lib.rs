@@ -47,8 +47,30 @@ impl Default for Input {
     }
 }
 
+macro_rules! any_implement {
+    ($ident:ident) => {
+        impl PartialEq for $ident {
+            fn eq(&self, other: &Self) -> bool {
+                match self {
+                    Self::Any => true,
+                    _ => match other {
+                        Self::Any => true,
+                        _ => core::mem::discriminant(self) == core::mem::discriminant(other),
+                    },
+                }
+            }
+        }
+
+        impl Hash for $ident {
+            fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+                core::mem::discriminant(self).hash(state);
+            }
+        }
+    };
+}
+
 /// Input enum to represent all keys you may get
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, Eq)]
 pub enum Key {
     Up,
     Down,
@@ -89,12 +111,16 @@ pub enum Key {
     MuteVolume,
     /// If a modifier is pressed on it's own
     Modifier(Modifier),
+    /// Is `PartialEq` to any Key.
+    /// Useful for when you don't care about the value of the key
+    Any,
     /// Nothing was pressed
     /// Or it was not implemented
     None,
 }
+any_implement!(Key);
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, Eq)]
 pub enum Modifier {
     Shift(Side),
     Control(Side),
@@ -103,34 +129,21 @@ pub enum Modifier {
     Super(Side),
     Meta(Side),
     Hyper(Side),
+    /// Is `PartialEq` to any Modifier.
+    /// Useful for when you don't care about the value of the modifier
+    Any,
     /// No modifier
     None,
 }
+any_implement!(Modifier);
 
 #[derive(Debug, Clone, Copy, Eq)]
 /// If there is no side reported; Left will used as default
 pub enum Side {
     Left,
     Right,
-    /// Is `PartialEq` to any side.
+    /// Is `PartialEq` to any Side.
     /// Useful for when you don't want to pick a side
     Any,
 }
-
-impl PartialEq for Side {
-    fn eq(&self, other: &Self) -> bool {
-        match self {
-            Side::Any => true,
-            _ => match other {
-                Side::Any => true,
-                _ => core::mem::discriminant(self) == core::mem::discriminant(other),
-            },
-        }
-    }
-}
-
-impl Hash for Side {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-        core::mem::discriminant(self).hash(state);
-    }
-}
+any_implement!(Side);
