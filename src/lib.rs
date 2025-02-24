@@ -1,5 +1,3 @@
-use std::hash::Hash;
-
 #[cfg(feature = "crossterm")]
 mod crossterm;
 
@@ -9,7 +7,7 @@ mod termion;
 #[cfg(feature = "termwiz")]
 mod termwiz;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Input {
     pub key: Key,
     pub modifier: Modifier,
@@ -45,28 +43,6 @@ impl Default for Input {
             modifier: Modifier::None,
         }
     }
-}
-
-macro_rules! any_implement {
-    ($ident:ident) => {
-        impl PartialEq for $ident {
-            fn eq(&self, other: &Self) -> bool {
-                match self {
-                    Self::Any => true,
-                    _ => match other {
-                        Self::Any => true,
-                        _ => core::mem::discriminant(self) == core::mem::discriminant(other),
-                    },
-                }
-            }
-        }
-
-        impl Hash for $ident {
-            fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
-                core::mem::discriminant(self).hash(state);
-            }
-        }
-    };
 }
 
 /// Input enum to represent all keys you may get
@@ -118,7 +94,31 @@ pub enum Key {
     /// Or it was not implemented
     None,
 }
-any_implement!(Key);
+
+macro_rules! really_match {
+    ($($kind:ident),+) => {
+        fn eq(&self, other: &Self) -> bool {
+            match self {
+                Self::Any => true,
+                $(Self::$kind(a) => {
+                    if let Self::$kind(b) = other {
+                        a == b
+                    } else {
+                        matches!(other, Self::Any)
+                    }
+                })+
+                _ => match other {
+                    Self::Any => true,
+                    _ => core::mem::discriminant(self) == core::mem::discriminant(other),
+                },
+            }
+        }
+    };
+}
+
+impl PartialEq for Key {
+    really_match!(Char, Func, Modifier);
+}
 
 #[derive(Debug, Clone, Copy, Eq)]
 pub enum Modifier {
@@ -135,7 +135,9 @@ pub enum Modifier {
     /// No modifier
     None,
 }
-any_implement!(Modifier);
+impl PartialEq for Modifier {
+    really_match!(Shift, Control, Alt, Super, Meta, Hyper);
+}
 
 #[derive(Debug, Clone, Copy, Eq)]
 /// If there is no side reported; Left will used as default
@@ -146,4 +148,15 @@ pub enum Side {
     /// Useful for when you don't want to pick a side
     Any,
 }
-any_implement!(Side);
+
+impl PartialEq for Side {
+    fn eq(&self, other: &Self) -> bool {
+        match self {
+            Self::Any => true,
+            _ => match other {
+                Self::Any => true,
+                _ => core::mem::discriminant(self) == core::mem::discriminant(other),
+            },
+        }
+    }
+}
